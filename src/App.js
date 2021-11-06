@@ -1,10 +1,13 @@
-import logo from './logo.svg';
 import './App.css';
+import { GlobalStoreContextProvider } from './store';
+import TitleComponent from './components/TitleComponent';
 
 function App() {
   return (
-    <div className="App">
-      
+    <div id="app" className="App">
+      <GlobalStoreContextProvider>
+        <TitleComponent/>
+      </GlobalStoreContextProvider>
     </div>
   );
 }
