@@ -1,6 +1,9 @@
 // Imports
 import * as d3 from 'd3';
 import React from 'react';
+import { useContext, useState, useRef } from "react";
+import { GlobalStoreContext } from '../store';
+
 
 function midAngle(d) { return d.startAngle + (d.endAngle - d.startAngle) / 2; } 
 
@@ -25,25 +28,39 @@ function translateAndRotate(position, d){
 }
 
 // Define width, height
-const height = 257;
-const width = 273;
+const height = 258;
+const width = 276;
 const margin = 40;
 const margin_top = 30;
 
 export default function PieChartComponent() {
 
+    // Set up context
+    const { store } = useContext(GlobalStoreContext);
+
+    // Set up state
+    const [clicked, setClicked] = useState(0);
+
+    // Create SVG object
     const svgRef = React.useRef(null);
 
     function definePieChart() {
         
         let radius = Math.min(width, height) / 2 - margin;
         
+        // Clear svg content before adding new elements
         const svgEl = d3.select(svgRef.current);
-        svgEl.selectAll("*").remove(); // Clear svg content before adding new elements
+        svgEl.selectAll("*").remove(); 
         const svg = d3.select(svgRef.current)
         // d3.select("svg")
             .attr("width", width + 2*margin + 10)
-            .attr("height", height + 2*margin_top + 10) 
+            .attr("height", height + 2*margin_top + 10)
+
+        const appEl = d3.select('#app');
+        appEl.select('.pie_data').remove(); 
+        let pie_div = d3.select("#app").append("div")
+            .attr("class", "pie_data")
+            .style("opacity", 0)
 
         // Define variable name and data array
         let varName = "Type";
@@ -57,15 +74,50 @@ export default function PieChartComponent() {
             .attr('transform', `translate(${margin + width/2}, ${margin + height/2})`)
 
         const pie = d3.pie().value(d => d.value);
-        const color = d3.scaleOrdinal(d3.schemeTableau10);
+        let color = d3.scaleOrdinal(d3.interpolateRainbow);
+
+        color = d3.scaleOrdinal()
+            .domain([124,126])
+            .range([clicked!=1?"#30c514":"#3bed1a", clicked!=2?"#964B00":"#ba5d00"]);
 
         const path = d3.arc().outerRadius(radius).innerRadius(0);
         const label = d3.arc().outerRadius(radius).innerRadius(radius - 90);
 
         const pies = g.selectAll('.arc').data(pie(data)).enter().append('g').attr('class', 'arc');
 
-        pies.append('path').attr('d', path).attr('fill', d => color(d.data.value));
-
+        pies.append('path').attr('d', path).attr('fill', d => color(d.data.value)).attr('opacity', function() {
+            if((d3.select(this)._groups[0][0].__data__.value === 124?1:2) === clicked){
+                return '0.5'
+            }else{
+                return '0.5'
+            }
+        })
+        .on("click", function(e){
+            // WHEN A ELEMENT OF THE PIE CHART IS CLICKED
+            setClicked(d3.select(this)._groups[0][0].__data__.value === 124?1:2);
+            store.updatePieChartClick(d3.select(this)._groups[0][0].__data__.value === 124?1:2);
+        }).on("mouseover", function(e){
+            d3.select(this).transition()
+                .duration('50')
+                .attr('opacity', '1');
+            pie_div.transition()
+                .duration(50)
+                .style("opacity", 1);
+            pie_div.text(d3.select(this)._groups[0][0].__data__.value + "/250")
+                .style("left", (e.pageX - 50) + "px")
+                .style("top", (e.pageY - 15) + "px");
+        }).on("mouseout", function(e){
+            if((d3.select(this)._groups[0][0].__data__.value === 124?1:2) != clicked){
+                console.log("opacity -.5")
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '0.5');
+            }
+            pie_div.transition()
+                .duration(50)
+                .style("opacity", 0);
+        });
+        
         pies.append('text')
             .text(d => d.data.name)
             .attr('transform', function(d) {
@@ -120,6 +172,6 @@ export default function PieChartComponent() {
     })
 
     return (
-        <svg ref={svgRef} width={width} height={height}></svg>
+        <svg id="pie" ref={svgRef} width={width} height={height}></svg>
     );
 }

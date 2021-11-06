@@ -6,7 +6,7 @@ export const GlobalStoreContext = createContext({});
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
 export const GlobalStoreActionType = {
-    CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
+    PIECHARTCLICK: "PIECHARTCLICK",
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -14,12 +14,8 @@ export const GlobalStoreActionType = {
 function GlobalStoreContextProvider(props) {
     // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     const [store, setStore] = useState({
-        idNamePairs: [],
-        currentList: null,
-        newListCounter: 0,
-        listNameActive: false,
-        itemActive: false,
-        listMarkedForDeletion: null
+        dataValues: [],
+        pieChartChoice: 0
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -28,19 +24,22 @@ function GlobalStoreContextProvider(props) {
         const { type, payload } = action;
         switch (type) {
             // LIST UPDATE OF ITS NAME
-            case GlobalStoreActionType.CHANGE_LIST_NAME: {
+            case GlobalStoreActionType.PIECHARTCLICK: {
                 return setStore({
-                    idNamePairs: payload.idNamePairs,
-                    currentList: payload.top5List,
-                    newListCounter: store.newListCounter,
-                    isListNameEditActive: false,
-                    isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    dataValues: store.dataValues,
+                    pieChartChoice: payload.value
                 });
             }
             default:
                 return store;
         }
+    }
+
+    store.updatePieChartClick = function (val) {
+        storeReducer({
+            type: GlobalStoreActionType.PIECHARTCLICK,
+            payload: val
+        });
     }
 
     return (
