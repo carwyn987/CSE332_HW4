@@ -82,7 +82,7 @@ export const Scatter = (props) => {
             .attr("cx", function (d) { return x(d.val1) + 30; } )
             .attr("cy", function (d) { return y(d.val2) + margin_vert + 2*Math.random() - 1; } )
             .attr("r", 1.2)
-            .style("fill", "lightgreen")
+            .style("fill", store.color)
 
         svg.selectAll("path")
             .attr("stroke", "white")

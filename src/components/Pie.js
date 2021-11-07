@@ -95,7 +95,8 @@ export default function Pie() {
         .on("click", function(e){
             // WHEN A ELEMENT OF THE PIE CHART IS CLICKED
             setClicked(d3.select(this)._groups[0][0].__data__.value === 124?1:2);
-            store.updatePieChartClick(d3.select(this)._groups[0][0].__data__.value === 124?1:2);
+            let colorSch = d3.select(this)._groups[0][0].__data__.value === 124?"#3bed1a":"#ba5d00";
+            store.updatePieChartClick(d3.select(this)._groups[0][0].__data__.value === 124?1:2, colorSch);
         }).on("mouseover", function(e){
             d3.select(this).transition()
                 .duration('50')

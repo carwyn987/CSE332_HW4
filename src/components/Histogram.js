@@ -87,7 +87,7 @@ export const Histogram = (props) => {
             .attr("transform", function(d) { return "translate(" + (x(d.x0) + margin_horz + 20) + "," + (y(d.length) + margin_vert) + ")"; })
             .attr("width", function(d) { return x(d.x1) - x(d.x0) -1 ; })
             .attr("height", function(d) { return height - y(d.length); })
-            .style("fill", "lightgreen")
+            .style("fill", store.color)
         // END ADD CODE
             
 

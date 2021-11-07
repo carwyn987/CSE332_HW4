@@ -19,7 +19,8 @@ function GlobalStoreContextProvider(props) {
     // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     const [store, setStore] = useState({
         dataValues: loadData(),
-        pieChartChoice: 0
+        pieChartChoice: 0,
+        color: "lightgreen"
     });
 
     // store.loadInit = async function() {
@@ -36,13 +37,15 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.PIECHARTCLICK: {
                 return setStore({
                     dataValues: payload.data,
-                    pieChartChoice: payload.value
+                    pieChartChoice: payload.value,
+                    color: payload.color
                 });
             }
             case GlobalStoreActionType.LOADINITIALDATA: {
                 return setStore({
                     dataValues: payload,
-                    pieChartChoice: store.pieChartChoice
+                    pieChartChoice: store.pieChartChoice,
+                    color: store.color
                 });
             }
             default:
@@ -50,7 +53,7 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.updatePieChartClick = async function (val) {
+    store.updatePieChartClick = async function (val, color) {
         let k = Promise.resolve(loadData());
         k.then(function(value) {
             if(val === 1){
@@ -67,7 +70,8 @@ function GlobalStoreContextProvider(props) {
                 type: GlobalStoreActionType.PIECHARTCLICK,
                 payload: {
                     value: val,
-                    data: value
+                    data: value,
+                    color: color
                 }
             });
         })
@@ -78,7 +82,8 @@ function GlobalStoreContextProvider(props) {
         if(data != store.dataValues){
             storeReducer({
                 type: GlobalStoreActionType.LOADINITIALDATA,
-                payload: data
+                payload: data,
+                color: "lightgreen"
             });
         }
     }
