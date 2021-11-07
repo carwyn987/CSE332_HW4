@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react'
-import dat from '../dat/data.csv';
+import data from '../data/data.csv';
 import * as d3 from 'd3';
 
 
@@ -20,7 +20,7 @@ function GlobalStoreContextProvider(props) {
     const [store, setStore] = useState({
         dataValues: loadData(),
         pieChartChoice: 0,
-        color: "lightgreen"
+        color: "#228B22"
     });
 
     // store.loadInit = async function() {
@@ -89,7 +89,7 @@ function GlobalStoreContextProvider(props) {
     }
 
     async function loadData() {
-      let d = await d3.csv(dat);
+      let d = await d3.csv(data);
       return d;
     }
 

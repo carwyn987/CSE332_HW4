@@ -1,12 +1,11 @@
 import './App.css';
-import * as d3 from 'd3';
 import { useContext } from "react";
-import dat from './dat/data.csv';
 import { GlobalStoreContextProvider } from './store';
 import { GlobalStoreContext } from './store';
 import TitleComponent from './components/TitleComponent';
 import {Scatter} from './components/Scatter';
 import {Histogram} from './components/Histogram';
+import { ParallelCoordinate } from './components/ParallelCoordinate';
 
 
 function App() {
@@ -20,6 +19,7 @@ function App() {
         <TitleComponent/>
         <Scatter>{store.dataValues}</Scatter>
         <Histogram>{store.dataValues}</Histogram>
+        <ParallelCoordinate>{store.dataValues}</ParallelCoordinate>
       </GlobalStoreContextProvider>
     </div>
   );
