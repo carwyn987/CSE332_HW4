@@ -1,4 +1,7 @@
 import { createContext, useState } from 'react'
+import dat from '../dat/data.csv';
+import * as d3 from 'd3';
+
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
@@ -6,6 +9,7 @@ export const GlobalStoreContext = createContext({});
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
 export const GlobalStoreActionType = {
+    LOADINITIALDATA: "LOADINITIALDATA",
     PIECHARTCLICK: "PIECHARTCLICK",
 }
 
@@ -14,9 +18,14 @@ export const GlobalStoreActionType = {
 function GlobalStoreContextProvider(props) {
     // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     const [store, setStore] = useState({
-        dataValues: [],
+        dataValues: loadData(),
         pieChartChoice: 0
     });
+
+    // store.loadInit = async function() {
+    //     store.dataValues = await loadData();
+    // }
+    // store.loadInit();
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
     // HANDLE EVERY TYPE OF STATE CHANGE
@@ -26,8 +35,14 @@ function GlobalStoreContextProvider(props) {
             // LIST UPDATE OF ITS NAME
             case GlobalStoreActionType.PIECHARTCLICK: {
                 return setStore({
-                    dataValues: store.dataValues,
+                    dataValues: payload.data,
                     pieChartChoice: payload.value
+                });
+            }
+            case GlobalStoreActionType.LOADINITIALDATA: {
+                return setStore({
+                    dataValues: payload,
+                    pieChartChoice: store.pieChartChoice
                 });
             }
             default:
@@ -35,11 +50,42 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.updatePieChartClick = function (val) {
-        storeReducer({
-            type: GlobalStoreActionType.PIECHARTCLICK,
-            payload: val
-        });
+    store.updatePieChartClick = async function (val) {
+        let k = Promise.resolve(loadData());
+        k.then(function(value) {
+            if(val === 1){
+                value = value.filter(obj => obj["Type"] == 1);
+            }else if(val === 2){
+                value = value.filter(obj => obj["Type"] == 0);
+            }else{
+                store.loadInitialData(loadData());
+                return;
+            }
+            console.log(value)
+        
+            storeReducer({
+                type: GlobalStoreActionType.PIECHARTCLICK,
+                payload: {
+                    value: val,
+                    data: value
+                }
+            });
+        })
+    }
+
+    store.loadInitialData = function (data) {
+        console.log(data, store.dataValues)
+        if(data != store.dataValues){
+            storeReducer({
+                type: GlobalStoreActionType.LOADINITIALDATA,
+                payload: data
+            });
+        }
+    }
+
+    async function loadData() {
+      let d = await d3.csv(dat);
+      return d;
     }
 
     return (

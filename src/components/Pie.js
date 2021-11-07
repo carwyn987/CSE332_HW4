@@ -108,7 +108,6 @@ export default function Pie() {
                 .style("top", (e.pageY - 15) + "px");
         }).on("mouseout", function(e){
             if((d3.select(this)._groups[0][0].__data__.value === 124?1:2) != clicked){
-                console.log("opacity -.5")
                 d3.select(this).transition()
                     .duration('50')
                     .attr('opacity', '0.5');

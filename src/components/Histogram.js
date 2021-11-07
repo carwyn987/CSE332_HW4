@@ -34,8 +34,8 @@ export const Histogram = (props) => {
 
     let varName = "Average Price";
 
-    Promise.resolve(props.children).then(function(d) {
-        setData(props.children);
+    Promise.resolve(store.dataValues).then(function(d) {
+        setData(store.dataValues);
 
         let data = new Array(d.length);
         for(let i = 0; i<d.length; i++){

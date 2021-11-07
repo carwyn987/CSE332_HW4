@@ -1,7 +1,9 @@
 import './App.css';
 import * as d3 from 'd3';
+import { useContext } from "react";
 import dat from './dat/data.csv';
 import { GlobalStoreContextProvider } from './store';
+import { GlobalStoreContext } from './store';
 import TitleComponent from './components/TitleComponent';
 import {Scatter} from './components/Scatter';
 import {Histogram} from './components/Histogram';
@@ -9,20 +11,15 @@ import {Histogram} from './components/Histogram';
 
 function App() {
 
-  // Load data into window
-  async function loadData() {
-    let d = await d3.csv(dat);
-    return d;
-  }
-
-  let d = loadData();
+  // Set up context
+  const { store } = useContext(GlobalStoreContext);
 
   return (
     <div id="app" className="App">
       <GlobalStoreContextProvider>
         <TitleComponent/>
-        <Scatter>{d}</Scatter>
-        <Histogram>{d}</Histogram>
+        <Scatter>{store.dataValues}</Scatter>
+        <Histogram>{store.dataValues}</Histogram>
       </GlobalStoreContextProvider>
     </div>
   );

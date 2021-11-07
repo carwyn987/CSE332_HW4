@@ -35,8 +35,8 @@ export const Scatter = (props) => {
     let varName = "Average Price";
     let var2Name = "Production";
 
-    Promise.resolve(props.children).then(function(d) {
-        setData(props.children);
+    Promise.resolve(store.dataValues).then(function(d) {
+        setData(store.dataValues);
 
         let data = new Array(d.length);
         for(let i = 0; i<d.length; i++){
