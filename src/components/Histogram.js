@@ -5,7 +5,7 @@ import { useContext, useState, useRef } from "react";
 import { GlobalStoreContext } from '../store';
 
 // export default function Scatter() {
-export const Scatter = (props) => {
+export const Histogram = (props) => {
 
     // Set up context
     const { store } = useContext(GlobalStoreContext);
@@ -30,26 +30,20 @@ export const Scatter = (props) => {
         .attr("height", height + 2*margin_vert + 10)
 
 
-    // SCATTER PLOT CODE:
+    // HISTOGRAM CODE:
 
     let varName = "Average Price";
-    let var2Name = "Production";
 
     Promise.resolve(props.children).then(function(d) {
         setData(props.children);
 
         let data = new Array(d.length);
         for(let i = 0; i<d.length; i++){
-            data[i] = new Object();
-            data[i].val1 = parseFloat(d[i][varName]);
-            data[i].val2 = parseFloat(d[i][var2Name]);
+            data[i] = parseFloat(d[i][varName]);
         }
 
-        // svg.append("g").attr("stroke", "white")
-        //     .attr("fill", "white").attr("transform", "translate(" + (0 + margin_horz) + "," + (margin_vert+10) + ")");
-
         let x = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return d.val1; })])
+            .domain([Math.min.apply(null, data), Math.max.apply(null, data)+1])
             .range([0, width]);
         svg.append("g")
             .attr("transform", "translate(" + (margin_horz+20) + "," + (height + margin_vert) + ")")
@@ -64,9 +58,19 @@ export const Scatter = (props) => {
                     .attr("fill", "white")
                     .attr("font-size", "9")
 
+        // BEGINNING ADDED CODE            
+        
+        let histogram = d3.histogram()
+            .domain(x.domain())
+            .thresholds(x.ticks(10));
+
+        let bins = histogram(data);
+
+        // END ADDED CODE
+
         let y = d3.scaleLinear()
             .range([height, 0]);
-            y.domain([d3.min(data, function(d) { return d.val2; }) - 0.2, d3.max(data, function(d) { return d.val2; }) + .2]);
+            y.domain([0, d3.max(bins, function(d) { return d.length; })]);
         svg.append("g")
             .attr("transform", "translate(" + (margin_horz+20) + "," + margin_vert + ")")
             .attr("stroke-width", ".5")
@@ -74,15 +78,18 @@ export const Scatter = (props) => {
             .attr("fill", "white")
             .call(d3.axisLeft(y));
 
-        svg.append('g')
-            .selectAll("dot")
-            .data(data)
+        // ADD CODE
+        svg.selectAll("rect")
+            .data(bins)
             .enter()
-            .append("circle")
-            .attr("cx", function (d) { return x(d.val1) + 30; } )
-            .attr("cy", function (d) { return y(d.val2) + margin_vert + 2*Math.random() - 1; } )
-            .attr("r", 1.2)
+            .append("rect")
+            .attr("x", 1)
+            .attr("transform", function(d) { return "translate(" + (x(d.x0) + margin_horz + 20) + "," + (y(d.length) + margin_vert) + ")"; })
+            .attr("width", function(d) { return x(d.x1) - x(d.x0) -1 ; })
+            .attr("height", function(d) { return height - y(d.length); })
             .style("fill", "lightgreen")
+        // END ADD CODE
+            
 
         svg.selectAll("path")
             .attr("stroke", "white")
@@ -94,7 +101,7 @@ export const Scatter = (props) => {
             .attr("y", height+ 50 + margin_vert)
             .attr("stroke", "white")
             .attr("fill", "white")
-            .text(varName);
+            .text("Frequency");
 
         // Y AXIS
         svg.append('text')        
@@ -104,13 +111,13 @@ export const Scatter = (props) => {
             .attr("stroke", "white")
             .attr("fill", "white")
             // .attr('transform', 'translate(' + width/2 + ', ' + height - margin.bottom + ')')
-            .text(var2Name);
+            .text(varName);
 
         // TITLE
         svg.append('text')
             .attr("x", 3*width/8 + 50)
             .attr("y", margin_vert - 10)
-            .text(var2Name + " vs " + varName)
+            .text(varName + " Histogram")
             .attr("stroke", "white")
             .attr("fill", "white")
         
@@ -118,6 +125,6 @@ export const Scatter = (props) => {
     })
 
     return (
-        <svg id="scatter" ref={svgRef} width={width+2*margin_horz} height={height+2*margin_vert}></svg>
+        <svg id="histo" ref={svgRef} width={width+2*margin_horz} height={height+2*margin_vert}></svg>
     );
 }

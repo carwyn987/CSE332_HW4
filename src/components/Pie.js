@@ -33,7 +33,7 @@ const width = 276;
 const margin = 40;
 const margin_top = 30;
 
-export default function PieChartComponent() {
+export default function Pie() {
 
     // Set up context
     const { store } = useContext(GlobalStoreContext);

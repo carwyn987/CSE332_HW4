@@ -1,9 +1,9 @@
 import TitleComponent from './TitleComponent';
-import PieChartComponent from './PieChartComponent';
+import Pie from './Pie';
 import Scatter from './Scatter';
 
 export {
     TitleComponent,
-    PieChartComponent,
+    Pie,
     Scatter
 };

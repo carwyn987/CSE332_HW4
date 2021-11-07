@@ -20,8 +20,16 @@ code {
 
 #scatter {
   position: absolute;
-  left: 63px;
-  top: 460px;
+  left: 700px;
+  top: 480px;
+  background-color: rgba(30,30,30,0.2);
+  border-radius: 10px;
+}
+
+#histo {
+  position: absolute;
+  left: 80px;
+  top: 480px;
   background-color: rgba(30,30,30,0.2);
   border-radius: 10px;
 }
