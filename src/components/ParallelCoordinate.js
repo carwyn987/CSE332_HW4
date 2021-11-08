@@ -11,12 +11,21 @@ export const ParallelCoordinate = () => {
 
     // Set up state
     const [data, setData] = useState([]);
+    const [selection, setSelection] = useState({
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0
+
+    });
+
+    let MOUSEDOWN = 0;
 
     // Create SVG object
     const svgRef = React.useRef(null);
 
     const width = 950;
-    const height = 280;
+    const height = 290;
     const margin_horz = 70;
     const margin_vert = 30;
 
@@ -59,7 +68,8 @@ export const ParallelCoordinate = () => {
         let y = {}
         for(let i = 0; i<11; i++){
             let name = properties[i];
-            if(name != "Average Price" && name != "Type" && name != "Production"){
+            if(name != "Average Price" && name != "Type" && name != "Production")
+            {
                 y[name] = d3.scaleLog()
                             .domain([1, d3.max(data, function(d){
                                 return d[name];
@@ -90,23 +100,36 @@ export const ParallelCoordinate = () => {
         let shiftDown = 37;
 
         // Create each data objects path line
-        svg.selectAll("Path")
+        let foreground = svg.selectAll("Path")
             .data(data)
             .enter().append("path")
             .attr("d", path)
             .style("fill", "none")
             .style("stroke", store.color)
-            .style("opacity", 0.7)
+            .style("opacity", 0.5)
+            .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")")
+
+        // Create each data objects path line
+        let background = svg.append("g")
+            .attr("class", "background")
+            .selectAll("path")
+            .data(data)
+            .enter().append("path")
+            .attr("d", path)
+            .style("stroke", "lightgray")
+            .style("opacity", 0.5)
             .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")");
 
+
         // Axis titles and scales
-        svg.selectAll("Axis")
+        let axes = svg.selectAll("Axis")
             .data(properties).enter()
             .append("g")
-            .attr("stroke", "white")
-            .style("fill", "white")
+            .attr("class", "noselect")
+            .style("stroke", "white")
+            .style('fill', 'white')
             .style("font-size", '11px')
-            .style("stroke-width", '.5')
+            .style("stroke-width", '.8')
             .attr("transform", function(d) {
                 return "translate(" + (x(d) + shiftRight) + ", " + shiftDown + ")";
             })
@@ -123,11 +146,38 @@ export const ParallelCoordinate = () => {
                 .attr("fill", "white")
                 .style("font-weight", "bold")
 
+        
+
     });
+
+    function handleDragStart(event) {
+        MOUSEDOWN = 1;
+        console.log("down", event)
+        setSelection({
+            startX: event.clientX,
+            startY: event.clientY,
+            endX: selection.endX,
+            endY: selection.endY
+        });
+    }
+
+    function handleDrop(event) {
+        MOUSEDOWN = 0;
+        console.log("up", event)
+        setSelection({
+            startX: selection.startX,
+            startY: selection.startY,
+            endX: event.clientX,
+            endY: event.clientY
+        });
+    }
 
     // END OF ADDED CODE
 
     return (
-        <svg id="parallel_coordinate" ref={svgRef} width={width+2*margin_horz} height={height+2*margin_vert}></svg>
+        <div id="parallel_coordinate_div" onMouseDown={handleDragStart} onMouseUp={handleDrop}>
+            <svg id="parallel_coordinate" ref={svgRef} width={width+2*margin_horz} height={height+2*margin_vert}></svg>
+            <div id="selection" style={{width: (selection.endX - selection.startX)>60?60:(selection.endX - selection.startX), height: selection.endY - selection.startY, left: selection.startX - margin_horz - 10, top: selection.startY - margin_vert - 30}}></div>
+        </div>
     );
 }

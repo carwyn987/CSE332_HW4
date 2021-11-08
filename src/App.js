@@ -3,10 +3,10 @@ import { useContext } from "react";
 import { GlobalStoreContextProvider } from './store';
 import { GlobalStoreContext } from './store';
 import TitleComponent from './components/TitleComponent';
-import {Scatter} from './components/Scatter';
-import {Histogram} from './components/Histogram';
+import { Scatter } from './components/Scatter';
+import { Histogram } from './components/Histogram';
 import { ParallelCoordinate } from './components/ParallelCoordinate';
-
+import { Reset } from './components/Reset'
 
 function App() {
 
@@ -20,6 +20,8 @@ function App() {
         <Scatter>{store.dataValues}</Scatter>
         <Histogram>{store.dataValues}</Histogram>
         <ParallelCoordinate>{store.dataValues}</ParallelCoordinate>
+        <Reset></Reset>
+        <div id="credits">Design and implementation by Carwyn Collinsworth</div>
       </GlobalStoreContextProvider>
     </div>
   );

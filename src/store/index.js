@@ -43,9 +43,9 @@ function GlobalStoreContextProvider(props) {
             }
             case GlobalStoreActionType.LOADINITIALDATA: {
                 return setStore({
-                    dataValues: payload,
-                    pieChartChoice: store.pieChartChoice,
-                    color: store.color
+                    dataValues: payload.data,
+                    pieChartChoice: 0,
+                    color: payload.color
                 });
             }
             default:
@@ -61,7 +61,7 @@ function GlobalStoreContextProvider(props) {
             }else if(val === 2){
                 value = value.filter(obj => obj["Type"] == 0);
             }else{
-                store.loadInitialData(loadData());
+                store.loadInitialData();
                 return;
             }
             console.log(value)
@@ -77,13 +77,16 @@ function GlobalStoreContextProvider(props) {
         })
     }
 
-    store.loadInitialData = function (data) {
+    store.loadInitialData = async function () {
+        let data = await loadData();
         console.log(data, store.dataValues)
         if(data != store.dataValues){
             storeReducer({
                 type: GlobalStoreActionType.LOADINITIALDATA,
-                payload: data,
-                color: "lightgreen"
+                payload: {
+                    data: data,
+                    color: "lightgreen"
+                }
             });
         }
     }
