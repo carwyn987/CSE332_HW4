@@ -197,7 +197,7 @@ export const ParallelCoordinate = () => {
     return (
         <div id="parallel_coordinate_div" onMouseDown={handleDragStart} onMouseUp={handleDrop}>
             <svg id="parallel_coordinate" ref={svgRef}  width={width+2*margin_horz} height={height+2*margin_vert}></svg>
-            <div id="selection" style={{width: Math.abs(selection.endX - selection.startX)>60?60:Math.abs(selection.endX - selection.startX), height: Math.abs(selection.endY - selection.startY), left: (selection.startX<selection.endX?selection.startX:selection.endX) - margin_horz - 10, top: (selection.startY<selection.endY?selection.startY:selection.endY) - margin_vert - 30}}></div>
+            <div id="selection" style={{width: Math.abs(selection.endX - selection.startX), height: Math.abs(selection.endY - selection.startY), left: (selection.startX<selection.endX?selection.startX:selection.endX) - margin_horz - 10, top: (selection.startY<selection.endY?selection.startY:selection.endY) - margin_vert - 30}}></div>
         </div>
     );
 }
