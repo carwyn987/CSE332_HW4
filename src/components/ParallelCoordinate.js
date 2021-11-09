@@ -92,7 +92,19 @@ export const ParallelCoordinate = () => {
 
         function path(d) {
             return d3.line()(properties.map(function(p){
-                return [x(p), y[p](d[p])];
+                if(selection.startX != 0 && selection.endX != 0 && selection.endX != 0 && selection.endY != 0){
+                    if(selection.startX - margin_horz - 10 < x(p) && selection.endX - margin_horz - 10 > x(p)){
+                        if(selection.startY - 2*margin_vert - 35 < y[p](d[p]) && selection.endY - 2*margin_vert - 35 > y[p](d[p])){
+                            return [x(p), y[p](d[p])];
+                        }else{
+                            return [undefined, undefined];
+                        }
+                    }else{
+                        return [x(p), y[p](d[p])];
+                    }
+                }else{
+                    return [x(p), y[p](d[p])];
+                }
             }));
         }
 
@@ -106,19 +118,19 @@ export const ParallelCoordinate = () => {
             .attr("d", path)
             .style("fill", "none")
             .style("stroke", store.color)
-            .style("opacity", 0.5)
+            .style("opacity", .5)
             .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")")
 
         // Create each data objects path line
-        let background = svg.append("g")
-            .attr("class", "background")
-            .selectAll("path")
-            .data(data)
-            .enter().append("path")
-            .attr("d", path)
-            .style("stroke", "lightgray")
-            .style("opacity", 0.5)
-            .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")");
+        // let background = svg.append("g")
+        //     .attr("class", "background")
+        //     .selectAll("path")
+        //     .data(data)
+        //     .enter().append("path")
+        //     .attr("d", path)
+        //     .style("stroke", "lightgray")
+        //     .style("opacity", 0.5)
+        //     .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")");
 
 
         // Axis titles and scales
@@ -156,9 +168,10 @@ export const ParallelCoordinate = () => {
         setSelection({
             startX: event.clientX,
             startY: event.clientY,
-            endX: selection.endX,
-            endY: selection.endY
+            endX: event.clientX,
+            endY: event.clientY,
         });
+        
     }
 
     function handleDrop(event) {
@@ -172,12 +185,25 @@ export const ParallelCoordinate = () => {
         });
     }
 
+    // function handleMousemove(event){
+    //     console.log("Hi")
+    //     if(MOUSEDOWN){
+    //         setSelection({
+    //             startX: selection.startX,
+    //             startY: selection.startY,
+    //             endX: event.clientX,
+    //             endY: event.clientY
+    //         });
+    //         this.forceUpdate()
+    //     }
+    // }
+
     // END OF ADDED CODE
 
     return (
         <div id="parallel_coordinate_div" onMouseDown={handleDragStart} onMouseUp={handleDrop}>
-            <svg id="parallel_coordinate" ref={svgRef} width={width+2*margin_horz} height={height+2*margin_vert}></svg>
-            <div id="selection" style={{width: (selection.endX - selection.startX)>60?60:(selection.endX - selection.startX), height: selection.endY - selection.startY, left: selection.startX - margin_horz - 10, top: selection.startY - margin_vert - 30}}></div>
+            <svg id="parallel_coordinate" ref={svgRef}  width={width+2*margin_horz} height={height+2*margin_vert}></svg>
+            <div id="selection" style={{width: Math.abs(selection.endX - selection.startX)>60?60:Math.abs(selection.endX - selection.startX), height: Math.abs(selection.endY - selection.startY), left: (selection.startX<selection.endX?selection.startX:selection.endX) - margin_horz - 10, top: (selection.startY<selection.endY?selection.startY:selection.endY) - margin_vert - 30}}></div>
         </div>
     );
 }
