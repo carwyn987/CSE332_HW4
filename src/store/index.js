@@ -11,6 +11,7 @@ export const GlobalStoreContext = createContext({});
 export const GlobalStoreActionType = {
     LOADINITIALDATA: "LOADINITIALDATA",
     PIECHARTCLICK: "PIECHARTCLICK",
+    BRUSHDATA: "BRUSHDATA"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -46,6 +47,13 @@ function GlobalStoreContextProvider(props) {
                     dataValues: payload.data,
                     pieChartChoice: 0,
                     color: payload.color
+                });
+            }
+            case GlobalStoreActionType.BRUSHDATA: {
+                return setStore({
+                    dataValues: payload.data,
+                    pieChartChoice: store.pieChartChoice,
+                    color: store.color
                 });
             }
             default:
@@ -88,6 +96,17 @@ function GlobalStoreContextProvider(props) {
                     color: "lightgreen"
                 }
             });
+        }
+    }
+
+    store.brushPCC = async function (data) {
+        if(data != store.dataValues){
+            storeReducer({
+                type: GlobalStoreActionType.BRUSHDATA,
+                payload: {
+                    data: data
+                }
+            })
         }
     }
 

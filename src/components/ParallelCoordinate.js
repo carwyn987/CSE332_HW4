@@ -18,6 +18,7 @@ export const ParallelCoordinate = () => {
         endY: 0
 
     });
+    const dataArr = new Array();
 
     let MOUSEDOWN = 0;
 
@@ -95,16 +96,12 @@ export const ParallelCoordinate = () => {
                 if(selection.startX != 0 && selection.endX != 0 && selection.endX != 0 && selection.endY != 0){
                     if(selection.startX - margin_horz - 10 < x(p) && selection.endX - margin_horz - 10 > x(p)){
                         if(selection.startY - 2*margin_vert - 35 < y[p](d[p]) && selection.endY - 2*margin_vert - 35 > y[p](d[p])){
-                            return [x(p), y[p](d[p])];
-                        }else{
-                            return [undefined, undefined];
+                            dataArr.push(d);
                         }
-                    }else{
-                        return [x(p), y[p](d[p])];
                     }
-                }else{
-                    return [x(p), y[p](d[p])];
                 }
+                // console.log(isNaN(y[p](d[p])))
+                return [x(p), isNaN(y[p](d[p]))?38:y[p](d[p])];
             }));
         }
 
@@ -118,21 +115,20 @@ export const ParallelCoordinate = () => {
             .attr("d", path)
             .style("fill", "none")
             .style("stroke", store.color)
-            .style("opacity", .5)
+            .style("opacity", 0.2)
             .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")")
 
         // Create each data objects path line
-        // let background = svg.append("g")
-        //     .attr("class", "background")
-        //     .selectAll("path")
-        //     .data(data)
-        //     .enter().append("path")
-        //     .attr("d", path)
-        //     .style("stroke", "lightgray")
-        //     .style("opacity", 0.5)
-        //     .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")");
-
-
+        let background = svg.append("g")
+            .attr("class", "background")
+            .selectAll("path")
+            .data(dataArr)
+            .enter().append("path")
+            .attr("d", path)
+            .style("stroke", "lightgray")
+            .style("opacity", 0.5)
+            .attr("transform", "translate(" + shiftRight + ", " + shiftDown + ")");
+        
         // Axis titles and scales
         let axes = svg.selectAll("Axis")
             .data(properties).enter()
@@ -164,7 +160,6 @@ export const ParallelCoordinate = () => {
 
     function handleDragStart(event) {
         MOUSEDOWN = 1;
-        console.log("down", event)
         setSelection({
             startX: event.clientX,
             startY: event.clientY,
@@ -176,12 +171,11 @@ export const ParallelCoordinate = () => {
 
     function handleDrop(event) {
         MOUSEDOWN = 0;
-        console.log("up", event)
         setSelection({
-            startX: selection.startX,
-            startY: selection.startY,
-            endX: event.clientX,
-            endY: event.clientY
+            startX: selection.startX<event.clientX?selection.startX:event.clientX,
+            startY: selection.startY<event.clientY?selection.startY:event.clientY,
+            endX: selection.endX>event.clientX?selection.endX:event.clientX,
+            endY: selection.endY>event.clientY?selection.endY:event.clientY,
         });
     }
 
